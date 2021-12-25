@@ -14,6 +14,7 @@ Frappe app to make file upload automatically upload and read from Spaces.
 4. Deletes from Spaces whenever a file is deleted in ui.
 5. Files are uploaded categorically in the format.
     {Spaces_folder_path}/{year}/{month}/{day}/{doctype}/{file_hash}
+6. In-built image compressor for jpeg, jpg and png before uploading to spaces.
 
 #### Installation.
 
@@ -29,6 +30,7 @@ Frappe app to make file upload automatically upload and read from Spaces.
     to be migrated to Spaces.
 4. Delete From Cloud when selected deletes the file form Spaces space whenever a file
     is deleted from ui. By default the Delete from cloud will be unchecked.
+5. You can enable image compression and specify the Min Compression size and quality of image in doctype. Note: The image readability will be given preference over image size.
 
 #### License
 
