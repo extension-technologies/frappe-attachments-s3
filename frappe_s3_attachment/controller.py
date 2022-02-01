@@ -403,5 +403,5 @@ def update_item_website_content(itemName):
         return
     for attachment in attachments:
         row_list.append(f"""<tr><td>{attachment.get('file_name')}</td><td>{attachment.get('file_size')/1000} KB</td><td><a href="{attachment.get('file_url')}" target="_blank"><button class='btn btn-primary'>Download</button></a></td></tr>""")
-    website_content = f"""<h2>Attachments</h2><table class='table'><thead><tr><th>File Name</th><th>File Size</th><th>Action</th></tr></thead><tbody>{''.join(row_list)}</tbody></table>"""
+    website_content = f"""<h2>Attachments</h2><div class="table-responsive"><table class='table table-striped'><thead><tr><th>File Name</th><th>File Size</th><th>Action</th></tr></thead><tbody>{''.join(row_list)}</tbody></table></table>"""
     frappe.db.set_value('Item', itemName, 'website_content', website_content)
