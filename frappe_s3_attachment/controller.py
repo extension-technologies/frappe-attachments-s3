@@ -291,6 +291,8 @@ def file_upload_to_s3(doc, method):
                 parent_doctype).get('image_field'), file_url)
 
         frappe.db.commit()
+        if(doc.get('attached_to_doctype' == 'Item')):
+            update_item_website_content(doc.get('attached_to_name'))
 
 
 @frappe.whitelist()
@@ -387,3 +389,18 @@ def ping():
     Test function to check if api function work.
     """
     return "pong"
+
+@frappe.whitelist()
+def update_item_website_content(itemName):
+    show_in_website = frappe.db.get_value('Item', itemName, 'show_in_website')
+    if (show_in_website == 0):
+        return
+    attachments = frappe.db.get_all('File', {'attached_to_doctype': 'Item', 'attached_to_name': itemName}, ['file_name', 'name', 'file_url', 'file_size'])
+    row_list = []
+    if (len(attachments) == 0):
+        frappe.db.set_value('Item', itemName, 'website_content', "")
+        return
+    for attachment in attachments:
+        row_list.append(f"""<tr><td>{attachment.get('file_name')}</td><td>{attachment.get('file_size')/1000} KB</td><td><a href="{attachment.get('file_url')}" target="_blank"><button class='btn btn-primary'>Download</button></a></td></tr>""")
+    website_content = f"""<h2>Attachments</h2><table class='table'><thead><tr><th>File Name</th><th>File Size</th><th>Action</th></tr></thead><tbody>{''.join(row_list)}</tbody></table>"""
+    frappe.db.set_value('Item', itemName, 'website_content', website_content)
