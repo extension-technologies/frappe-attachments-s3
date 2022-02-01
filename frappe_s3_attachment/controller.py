@@ -263,6 +263,7 @@ def file_upload_to_s3(doc, method):
         else:
             file_path = site_path + path
 
+        is_image = (magic.from_file(os.path.join(os.getcwd(), file_path), mime=True) in ['image/jpg', 'image/jpeg', 'image/png'])
         s3_upload.compress_image(file_path)
 
         key = s3_upload.upload_files_to_s3_with_key(
