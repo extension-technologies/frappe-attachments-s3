@@ -1,4 +1,4 @@
-<a href="https://extensionerp.com"><img src="https://cdn.extensionmart.com/Extension-ERP-06-32.png" align="right" /></a>
+<a href="https://extensionerp.com"><img src="https://sgp1.digitaloceanspaces.com/cdn.extension/Extension-ERP-06-32.png" align="right" /></a>
 
 ## Frappe Digital Ocean Spaces Attachment Integration
 
