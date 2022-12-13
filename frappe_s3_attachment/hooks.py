@@ -4,7 +4,7 @@ from . import __version__ as app_version
 
 app_name = "frappe_s3_attachment"
 app_title = "Frappe S3 Attachment"
-app_publisher = "Frappe"
+app_publisher = "Extension Technologies"
 app_description = "Frappe app to make file upload to Digital Ocean Spaces through attach file option."
 app_icon = "octicon octicon-file-directory"
 app_color = "grey"
