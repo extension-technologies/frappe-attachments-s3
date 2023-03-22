@@ -77,7 +77,6 @@ class S3Operations(object):
 
         file_name = file_name.replace(' ', '_')
         file_name = self.strip_special_chars(file_name)
-        parent_doctype = parent_doctype if parent_doctype else 'Files'
         key = ''.join(
             random.choice(
                 string.ascii_uppercase + string.digits) for _ in range(8)
@@ -255,7 +254,7 @@ def file_upload_to_s3(doc, method):
     s3_upload = S3Operations()
     path = doc.file_url
     site_path = frappe.utils.get_site_path()
-    parent_doctype = doc.attached_to_doctype
+    parent_doctype = doc.get('attached_to_doctype', 'Files')
     parent_name = doc.attached_to_name
     ignore_s3_upload_for_doctype = frappe.local.conf.get('ignore_s3_upload_for_doctype') or ['Data Import']
     if (parent_doctype not in ignore_s3_upload_for_doctype) and not path.startswith(('http://', 'https://')):
