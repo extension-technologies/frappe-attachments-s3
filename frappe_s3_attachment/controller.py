@@ -77,6 +77,7 @@ class S3Operations(object):
 
         file_name = file_name.replace(' ', '_')
         file_name = self.strip_special_chars(file_name)
+        parent_doctype = parent_doctype if parent_doctype else 'Files'
         key = ''.join(
             random.choice(
                 string.ascii_uppercase + string.digits) for _ in range(8)
