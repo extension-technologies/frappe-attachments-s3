@@ -23,3 +23,7 @@ doc_events = {
         "on_trash": "frappe_s3_attachment.controller.delete_from_cloud"
     }
 }
+
+override_doctype_class = {
+    "File": "frappe_s3_attachment.frappe_s3_attachment.customizations.file.file.customFile"
+}

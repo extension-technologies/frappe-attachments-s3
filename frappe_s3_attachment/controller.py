@@ -113,29 +113,29 @@ class S3Operations(object):
         key = self.key_generator(file_name, parent_doctype, parent_name)
         content_type = mime_type
         try:
-            if is_private:
-                self.S3_CLIENT.upload_file(
-                    file_path, self.BUCKET, key,
-                    ExtraArgs={
+            # if is_private:
+            #     self.S3_CLIENT.upload_file(
+            #         file_path, self.BUCKET, key,
+            #         ExtraArgs={
+            #             "ContentType": content_type,
+            #             "Metadata": {
+            #                 "ContentType": content_type,
+            #                 "file_name": file_name
+            #             }
+            #         }
+            #     )
+            # else:
+            self.S3_CLIENT.upload_file(
+                file_path, self.BUCKET, key,
+                ExtraArgs={
+                    "ContentType": content_type,
+                    "ACL": 'public-read',
+                    "Metadata": {
                         "ContentType": content_type,
-                        "Metadata": {
-                            "ContentType": content_type,
-                            "file_name": file_name
-                        }
-                    }
-                )
-            else:
-                self.S3_CLIENT.upload_file(
-                    file_path, self.BUCKET, key,
-                    ExtraArgs={
-                        "ContentType": content_type,
-                        "ACL": 'public-read',
-                        "Metadata": {
-                            "ContentType": content_type,
 
-                        }
                     }
-                )
+                }
+            )
 
         except boto3.exceptions.S3UploadFailedError:
             frappe.throw(frappe._("File Upload Failed. Please try again."))
@@ -271,15 +271,15 @@ def file_upload_to_s3(doc, method):
             parent_name
         )
 
-        if doc.is_private:
-            method = "frappe_s3_attachment.controller.generate_file"
-            file_url = """/api/method/{0}?key={1}&file_name={2}""".format(method, key, doc.file_name)
-        else:
-            file_url = '{}/{}/{}'.format(
-                s3_upload.S3_CLIENT.meta.endpoint_url,
-                s3_upload.BUCKET,
-                key
-            )
+        # if doc.is_private:
+        #     method = "frappe_s3_attachment.controller.generate_file"
+        #     file_url = """/api/method/{0}?key={1}&file_name={2}""".format(method, key, doc.file_name)
+        # else:
+        file_url = '{}/{}/{}'.format(
+            s3_upload.S3_CLIENT.meta.endpoint_url,
+            s3_upload.BUCKET,
+            key
+        )
         os.remove(file_path)
         frappe.db.sql("""UPDATE `tabFile` SET file_url=%s, folder=%s,
             old_parent=%s, content_hash=%s WHERE name=%s""", (
@@ -321,21 +321,21 @@ def upload_existing_files_s3(name, file_name):
         site_path = frappe.utils.get_site_path()
         parent_doctype = doc.attached_to_doctype
         parent_name = doc.attached_to_name
-        if not doc.is_private:
-            file_path = site_path + '/public' + path
-        else:
-            file_path = site_path + path
+        # if not doc.is_private:
+        #     file_path = site_path + '/public' + path
+        # else:
+        file_path = site_path + path
         key = s3_upload.upload_files_to_s3_with_key(
             file_path, doc.file_name,
             doc.is_private, parent_doctype,
             parent_name
         )
 
-        if doc.is_private:
-            method = "frappe_s3_attachment.controller.generate_file"
-            file_url = """/api/method/{0}?key={1}""".format(method, key)
-        else:
-            file_url = '{}/{}/{}'.format(
+        # if doc.is_private:
+        #     method = "frappe_s3_attachment.controller.generate_file"
+        #     file_url = """/api/method/{0}?key={1}""".format(method, key)
+        # else:
+        file_url = '{}/{}/{}'.format(
                 s3_upload.S3_CLIENT.meta.endpoint_url,
                 s3_upload.BUCKET,
                 key
