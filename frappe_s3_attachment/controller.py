@@ -251,18 +251,17 @@ def update_comment(doc, path, parent_doctype, parent_docname):
     """
         to update the comment url so that link can work
     """
-    from frappe.desk.form.load import get_docinfo
-    get_docinfo(doctype=parent_doctype, name=parent_docname)
-    docinfo = frappe.response["docinfo"]
+    comment = frappe.db.get_list('Comment', {
+        "reference_doctype": parent_doctype,
+        "reference_name": parent_docname,
+        "content": ["like", f"%{quote(path)}%"]}, ['name'])
+    
+    if(comment):
+        file_url = quote(frappe.safe_encode(doc.file_url), safe="/:") if doc.file_url else doc.file_name
+        file_name = doc.file_name or doc.file_url
 
-    for log in docinfo['attachment_logs']:
-        if(path in log['content']):
-            file_url = quote(frappe.safe_encode(doc.file_url), safe="/:") if doc.file_url else doc.file_name
-            file_name = doc.file_name or doc.file_url
-
-            value = frappe._("Added {0}").format(f"<a href='{file_url}' target='_blank'>{file_name}</a>")
-            frappe.db.set_value('Comment', log['name'], 'content', value)
-        break
+        value = frappe._("Added {0}").format(f"<a href='{file_url}' target='_blank'>{file_name}</a>")
+        frappe.db.set_value('Comment', comment[0]['name'], 'content', value)
 
 
 @frappe.whitelist()
