@@ -15,6 +15,7 @@ import frappe
 
 from PIL import Image
 import magic
+from urllib.parse import quote, unquote
 
 
 class S3Operations(object):
@@ -246,6 +247,24 @@ class S3Operations(object):
                 frappe.log_error(frappe.get_traceback(), 'compress_image')
 
 
+def update_comment(doc, path, parent_doctype, parent_docname):
+    """
+        to update the comment url so that link can work
+    """
+    from frappe.desk.form.load import get_docinfo
+    get_docinfo(doctype=parent_doctype, name=parent_docname)
+    docinfo = frappe.response["docinfo"]
+
+    for log in docinfo['attachment_logs']:
+        if(path in log['content']):
+            file_url = quote(frappe.safe_encode(doc.file_url), safe="/:") if doc.file_url else doc.file_name
+            file_name = doc.file_name or doc.file_url
+
+            value = frappe._("Added {0}").format(f"<a href='{file_url}' target='_blank'>{file_name}</a>")
+            frappe.db.set_value('Comment', log['name'], 'content', value)
+        break
+
+
 @frappe.whitelist()
 def file_upload_to_s3(doc, method):
     """
@@ -289,6 +308,8 @@ def file_upload_to_s3(doc, method):
         
         # if parent_doctype and frappe.get_meta(parent_doctype).get('image_field'):
         # frappe.db.set_value(parent_doctype, parent_name, frappe.get_meta(parent_doctype).get('image_field'), file_url)
+
+        update_comment(doc, path, parent_doctype, parent_name)
 
         frappe.db.commit()
         doc.reload()
